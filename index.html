@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .recommendations {
+            margin-top: 20px;
+        }
+        .recommendations ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .recommendations li {
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Movie Recommendation System</h1>
+        <form id="recommendationForm">
+            <input type="text" id="movieInput" placeholder="Enter your favorite movie" required>
+            <button type="submit">Get Recommendations</button>
+        </form>
+        <div class="recommendations" id="recommendations">
+            <!-- Recommended movies will appear here -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("recommendationForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            
+            // Get user input
+            const movieInput = document.getElementById("movieInput").value;
+
+            // Call the Flask API
+            const response = await fetch("/recommend", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ movie_name: movieInput })
+            });
+
+            const data = await response.json();
+
+            // Display recommendations
+            const recommendationsDiv = document.getElementById("recommendations");
+            recommendationsDiv.innerHTML = ""; // Clear previous results
+            
+            if (data.recommendations) {
+                const ul = document.createElement("ul");
+                data.recommendations.forEach(movie => {
+                    const li = document.createElement("li");
+                    li.textContent = movie;
+                    ul.appendChild(li);
+                });
+                recommendationsDiv.appendChild(ul);
+            } else {
+                recommendationsDiv.textContent = "No recommendations found.";
+            }
+        });
+    </script>
+</body>
+</html>
